@@ -2,8 +2,17 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const requestTime = function (req, res, next) {
+  req.requestTime = Date.now()
+  next()
+}
+
+app.use(requestTime)
+
 app.use(function (req, res, next) {
-  console.log(`${new Date().toLocaleString()} | ${req.method} from ${req.originalUrl}`)
+  res.on('finish', function () {
+    console.log(`${new Date().toLocaleString()} | ${req.method} from ${req.originalUrl} | total time: ${Date.now() - req.requestTime}ms`)
+  })
   next()
 })
 
